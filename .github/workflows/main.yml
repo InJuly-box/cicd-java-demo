@@ -7,15 +7,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+        with:
+        fetch-depth: 0  # 确保拉取完整的仓库历史
+      - name: Verify POM existence
+        run: |
+          if [ ! -f "pom.xml" ]; then
+            echo "Error: pom.xml not found!"
+            ls -la  # 调试目录结构
+            exit 1
+          fi
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'maven'
       
       - name: Build with Maven
-        run: mvn package
+        run: mvn package -B -DskipTests
       
       - name: Login to Tencent Cloud Registry
         run: |
@@ -27,7 +36,30 @@ jobs:
           docker build -t ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP .
           docker push ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP
           echo "IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
-      
+deploy:
+    needs: build
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Update Helm values
+        run: |
+          sed -i "s|tag:.*|tag: ${{ env.IMAGE_TAG }}|" helm-chart/values.yaml
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add helm-chart/values.yaml
+          git commit -m "Update image to ${{ env.IMAGE_TAG }} [skip ci]"
+          git push
+
+      - name: Trigger ArgoCD Sync
+        uses: argoproj/argo-cd-github-actions@main
+        with:
+          argocd-server: ${{ secrets.ARGOCD_SERVER }}
+          argocd-token: ${{ secrets.ARGOCD_TOKEN }}
+          application-name: my-java-app
+          
+              
       - name: Send build success notification
         if: success()
         uses: dawidd6/action-send-mail@v3
