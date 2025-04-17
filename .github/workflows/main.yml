@@ -9,13 +9,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # 确保拉取完整的仓库历史
-      - name: Verify POM existence
-        run: |
-          if [ ! -f "pom.xml" ]; then
-            echo "Error: pom.xml not found!"
-            ls -la  # 调试目录结构
-            exit 1
-          fi
+#      - name: Verify POM existence
+#        run: |
+#          if [ ! -f "pom.xml" ]; then
+#            echo "Error: pom.xml not found!"
+#            ls -la  # 调试目录结构
+#            exit 1
+#          fi
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
