@@ -36,7 +36,7 @@ jobs:
           docker build -t ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP .
           docker push ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP
           echo "IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
-deploy:
+  deploy:
     needs: build
     if: success()
     runs-on: ubuntu-latest
