@@ -1,0 +1,44 @@
+# .github/workflows/ci.yaml
+name: CI Pipeline
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      
+      - name: Build with Maven
+        run: mvn package
+      
+      - name: Login to Tencent Cloud Registry
+        run: |
+          docker login ccr.ccs.tencentyun.com -u 100017386823 -p Qwe123213
+      
+      - name: Build and Push Docker Image
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          docker build -t ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP .
+          docker push ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP
+          echo "IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
+      
+      - name: Send build success notification
+        if: success()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.126.com
+          server_port: 456
+          username: khlove2186@126.com 
+#${{ secrets.MAIL_USERNAME }}
+          password: RNU8yWHZANZZ4BJG
+#${{ secrets.MAIL_PASSWORD }}
+          subject: "CI Build Success - ${{ github.repository }}"
+          body: "Build succeeded for ${{ github.repository }} commit ${{ github.sha }}"
+          to: khlove2186@126.com
+          from: khlove2186@126.com
