@@ -31,7 +31,7 @@ jobs:
       
       - name: Login to Tencent Cloud Registry
         run: |
-          docker login ccr.ccs.tencentyun.com -u 100017386823 -p Qwe123213
+          docker login ccr.ccs.tencentyun.com -u 100017386823 -p "Qwe123123"
       
       - name: Build and Push Docker Image
         run: |
