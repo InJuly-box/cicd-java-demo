@@ -35,8 +35,8 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
           docker login ccr.ccs.tencentyun.com -u 100017386823 -p "Qwe123123"
 
-          docker build -t ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP .
-          docker push ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP
+          docker build -t ccr.ccs.tencentyun.com/ci_cd/cicd-java-demo:$TIMESTAMP .
+          docker push ccr.ccs.tencentyun.com/ci_cd/cicd-java-demo:$TIMESTAMP
           echo "IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
   deploy:
     needs: build
