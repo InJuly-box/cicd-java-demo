@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-        fetch-depth: 0  # 确保拉取完整的仓库历史
+          fetch-depth: 0  # 确保拉取完整的仓库历史
       - name: Verify POM existence
         run: |
           if [ ! -f "pom.xml" ]; then
@@ -58,8 +58,8 @@ deploy:
           argocd-server: ${{ secrets.ARGOCD_SERVER }}
           argocd-token: ${{ secrets.ARGOCD_TOKEN }}
           application-name: my-java-app
-          
-              
+
+
       - name: Send build success notification
         if: success()
         uses: dawidd6/action-send-mail@v3
