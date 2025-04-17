@@ -29,13 +29,12 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build -x test
       
-      - name: Login to Tencent Cloud Registry
-        run: |
-          docker login ccr.ccs.tencentyun.com -u 100017386823 -p "Qwe123123"
-      
-      - name: Build and Push Docker Image
+
+      - name: Login to Tencent Cloud Registry && Build and Push Docker Image
         run: |
           TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          docker login ccr.ccs.tencentyun.com -u 100017386823 -p "Qwe123123"
+
           docker build -t ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP .
           docker push ccr.ccs.tencentyun.com/cicd/cicd-java-demo:$TIMESTAMP
           echo "IMAGE_TAG=$TIMESTAMP" >> $GITHUB_ENV
